@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tie_mobile/main/bloc/main_bloc.dart';
-import 'package:tie_mobile/main/view/main_page.dart';
-
+import 'package:get_it/get_it.dart';
+import 'package:tie_mobile/main/bloc/main/main_bloc.dart';
+import 'package:tie_mobile/main/bloc/materials/materials_bloc.dart';
+import 'package:tie_mobile/main/view/main/main_page.dart';
 
 class TieApp extends StatefulWidget {
   const TieApp({super.key});
@@ -25,6 +26,13 @@ class _TieAppState extends State<TieApp> {
           BlocProvider<MainBloc>(
             create: (context) {
               return MainBloc();
+            },
+          ),
+          BlocProvider<MaterialsBloc>(
+            create: (context) {
+              return MaterialsBloc(
+                materialsRepository: GetIt.I.get(),
+              );
             },
           )
         ],

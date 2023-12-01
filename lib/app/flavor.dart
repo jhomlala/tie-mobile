@@ -1,4 +1,0 @@
-enum Flavor{
-  dev,
-  prod
-}
