@@ -4,7 +4,7 @@ part of 'materials_bloc.dart';
 class MaterialsState with _$MaterialsState {
   const factory MaterialsState(
       {required bool isLoading,
-      required List<Material> materials}) = _MaterialsState;
+      required List<TieMaterial> materials}) = _MaterialsState;
 
   factory MaterialsState.initial() => MaterialsState(
         isLoading: true,

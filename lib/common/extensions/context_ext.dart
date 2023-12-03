@@ -6,4 +6,8 @@ extension ContextExtension on BuildContext {
   T bloc<T extends Bloc>() {
     return BlocProvider.of<T>(this);
   }
+
+  Size deviceSize() {
+    return MediaQuery.of(this).size;
+  }
 }

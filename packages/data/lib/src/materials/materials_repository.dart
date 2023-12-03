@@ -10,8 +10,7 @@ class MaterialsRepository {
   final MaterialsDataSource localDataSource;
   final MaterialsDataSource remoteDataSource;
 
-  @override
-  Future<Either<TieError, List<Material>>> getMaterials() async {
+  Future<Either<TieError, List<TieMaterial>>> getMaterials() async {
     return localDataSource.getMaterials();
   }
 }
