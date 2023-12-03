@@ -12,3 +12,7 @@ sealed class TieError extends Error {
 class TieNavigationError extends TieError {
   TieNavigationError(String message) : super('Navigation error: $message');
 }
+
+class TieUnknownGameError extends TieError{
+  TieUnknownGameError(String message): super('Unsupported game: $message');
+}

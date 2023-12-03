@@ -16,11 +16,12 @@ enum Routes {
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
     GoRoute(
-        path: Routes.home.path,
-        name: Routes.home.path,
-        builder: (BuildContext context, GoRouterState state) {
-          return const MainPage();
-        },),
+      path: Routes.home.path,
+      name: Routes.home.path,
+      builder: (BuildContext context, GoRouterState state) {
+        return const MainPage();
+      },
+    ),
     GoRoute(
       path: Routes.material.path,
       name: Routes.material.path,
@@ -35,5 +36,3 @@ final GoRouter router = GoRouter(
     ),
   ],
 );
-
-

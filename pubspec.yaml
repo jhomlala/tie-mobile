@@ -14,6 +14,8 @@ dependencies:
     path: packages/domain
   data:
     path: packages/data
+  game:
+    path: packages/game
 
   equatable: ^2.0.5
   flutter_bloc: ^8.1.3
