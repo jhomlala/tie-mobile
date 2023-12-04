@@ -4,6 +4,7 @@ import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:game/src/common/game.dart';
 import 'package:game/src/hamster/hamster_config.dart';
+import 'package:game/src/hamster/hamster_dialog.dart';
 import 'package:game/src/hamster/hamster_tile.dart';
 
 class HamsterGame extends StatefulWidget with Game {
@@ -46,22 +47,20 @@ class _HamsterGameState extends State<HamsterGame> {
           Size(constraints.maxWidth, constraints.maxHeight),
         );
         final hamsterTilesNotOpened =
-        _hamsterTiles.where((element) => !element.opened);
+            _hamsterTiles.where((element) => !element.opened);
 
         return Stack(
           children: [
             CustomPaint(
               painter:
-              _HamsterPainter(config: _hamsterConfig, tiles: _hamsterTiles),
+                  _HamsterPainter(config: _hamsterConfig, tiles: _hamsterTiles),
             ),
             ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
-
             ...hamsterTilesNotOpened.map(
-                  (tile) =>
-                  _HamsterCard(
-                    tile: tile,
-                    onPressed: onCardPressed,
-                  ),
+              (tile) => _HamsterCard(
+                tile: tile,
+                onPressed: onCardPressed,
+              ),
             ),
           ],
         );
@@ -69,7 +68,8 @@ class _HamsterGameState extends State<HamsterGame> {
     );
   }
 
-  void onCardPressed(HamsterTile tile) {
+  Future<void> onCardPressed(HamsterTile tile) async {
+    await HamsterDialog.show(context, tile);
     setState(() {
       openedTiles.add(tile);
     });
@@ -102,28 +102,29 @@ class _HamsterGameState extends State<HamsterGame> {
           opened = openedTiles
               .where(
                 (element) =>
-            element.boardX == horizontalIndex &&
-                element.boardY == verticalIndex,
-          )
+                    element.boardX == horizontalIndex &&
+                    element.boardY == verticalIndex,
+              )
               .isNotEmpty;
         }
 
         final tileConfig = config.tiles
             .where(
               (element) =>
-          element.boardX == horizontalIndex &&
-              element.boardY == verticalIndex,
-        )
+                  element.boardX == horizontalIndex &&
+                  element.boardY == verticalIndex,
+            )
             .toList()
             .firstOrNull;
 
         final tile = HamsterTile(
-            type: tileType,
-            boardX: horizontalIndex,
-            boardY: verticalIndex,
-            rect: rect,
-            opened: opened,
-            config: tileConfig);
+          type: tileType,
+          boardX: horizontalIndex,
+          boardY: verticalIndex,
+          rect: rect,
+          opened: opened,
+          config: tileConfig,
+        );
         tiles.add(tile);
       }
     }
@@ -132,12 +133,13 @@ class _HamsterGameState extends State<HamsterGame> {
 
   HamsterMaterial _getConfig() {
     return HamsterMaterial.fromJson(
-        jsonDecode(widget.material.config) as Map<String, dynamic>);
+      jsonDecode(widget.material.config) as Map<String, dynamic>,
+    );
   }
 }
 
 class _HamsterItem extends StatelessWidget {
-  const _HamsterItem({super.key, required this.tile});
+  const _HamsterItem({required this.tile});
 
   final HamsterTile tile;
 
@@ -147,15 +149,14 @@ class _HamsterItem extends StatelessWidget {
       return const SizedBox();
     }
     return Positioned(
-        left: tile.rect.left,
-        top: tile.rect.top,
-        width: tile.rect.width,
-        height: tile.rect.height,
-        child: Image.network(tile.config!.imageUrl)
+      left: tile.rect.left,
+      top: tile.rect.top,
+      width: tile.rect.width,
+      height: tile.rect.height,
+      child: Image.network(tile.config!.imageUrl),
     );
   }
 }
-
 
 class _HamsterCard extends StatelessWidget {
   const _HamsterCard({required this.tile, required this.onPressed});
@@ -199,15 +200,15 @@ class _HamsterPainter extends CustomPainter {
     final height = size.height;
     final paint = _getLinePaint();
     for (var verticalLineIndex = 0;
-    verticalLineIndex <= 6;
-    verticalLineIndex++) {
+        verticalLineIndex <= 6;
+        verticalLineIndex++) {
       final xPos = width / 6 * verticalLineIndex;
       canvas.drawLine(Offset(xPos, 0), Offset(xPos, height), paint);
     }
 
     for (var horizontalLineIndex = 0;
-    horizontalLineIndex <= 6;
-    horizontalLineIndex++) {
+        horizontalLineIndex <= 6;
+        horizontalLineIndex++) {
       final yPos = height / 6 * horizontalLineIndex;
       canvas.drawLine(Offset(0, yPos), Offset(width, yPos), paint);
     }
@@ -215,11 +216,10 @@ class _HamsterPainter extends CustomPainter {
 
   void _paintHeaders(Canvas canvas, Size size) {
     // ignore: cascade_invocations
-    tiles.forEach((value) {
-      canvas.drawRect(value.rect, Paint()
-        ..color = Colors.blue);
+    for (final value in tiles) {
+      canvas.drawRect(value.rect, Paint()..color = Colors.blue);
       if (value.type == HamsterTileType.normal) {
-        return;
+        continue;
       }
 
       const textStyle = TextStyle(
@@ -233,16 +233,13 @@ class _HamsterPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: textSpan,
         textDirection: TextDirection.ltr,
-      );
-      textPainter.layout(
-        minWidth: 0,
-      );
+      )..layout();
 
       final rect = value.rect;
       final offset =
-      Offset((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
+          Offset((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
       textPainter.paint(canvas, offset);
-    });
+    }
   }
 
   String _getTileName(HamsterTile hamsterTile) {
@@ -251,16 +248,15 @@ class _HamsterPainter extends CustomPainter {
         return hamsterTile.boardY.toString();
       case HamsterTileType.topHeader:
         return hamsterTile.boardX.toString();
-
       case HamsterTileType.normal:
-        return "";
+        return '';
     }
   }
 
   Paint _getLinePaint() {
     final paint = Paint()
       ..color = Colors.grey
-      ..strokeWidth = 5;
+      ..strokeWidth = config.lineStrokeSize;
     return paint;
   }
 
