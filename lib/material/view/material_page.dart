@@ -16,14 +16,21 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
 
   @override
   Widget build(BuildContext context) {
+    final shortestSize = context.deviceSize().shortestSide;
     return Scaffold(
-      body: Column(
+      appBar: AppBar(),
+      body: Container(
+        padding: const EdgeInsets.all(32),child: Column(
         children: [
           Text(widget.material.toString()),
-          _getGame(),
+          SizedBox(
+            width: shortestSize,
+            height: shortestSize,
+            child: _getGame(),
+          ),
         ],
       ),
-    );
+    ),);
   }
 
   Widget _getGame() {
