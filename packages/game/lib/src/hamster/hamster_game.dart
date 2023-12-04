@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:game/src/common/game.dart';
+import 'package:game/src/hamster/hamster_config.dart';
+import 'package:game/src/hamster/hamster_tile.dart';
 
 class HamsterGame extends StatefulWidget with Game {
   const HamsterGame({required this.material, super.key});
@@ -24,17 +28,165 @@ class HamsterGame extends StatefulWidget with Game {
 }
 
 class _HamsterGameState extends State<HamsterGame> {
+  late HamsterConfig _hamsterConfig;
+  late List<HamsterTile> _hamsterTiles;
+  List<HamsterTile> openedTiles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _hamsterConfig = HamsterConfig();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(painter: _HamsterPainter());
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        _hamsterTiles = _getTiles(
+          Size(constraints.maxWidth, constraints.maxHeight),
+        );
+        final hamsterTilesNotOpened =
+        _hamsterTiles.where((element) => !element.opened);
+
+        return Stack(
+          children: [
+            CustomPaint(
+              painter:
+              _HamsterPainter(config: _hamsterConfig, tiles: _hamsterTiles),
+            ),
+            ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
+
+            ...hamsterTilesNotOpened.map(
+                  (tile) =>
+                  _HamsterCard(
+                    tile: tile,
+                    onPressed: onCardPressed,
+                  ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void onCardPressed(HamsterTile tile) {
+    setState(() {
+      openedTiles.add(tile);
+    });
+  }
+
+  List<HamsterTile> _getTiles(Size size) {
+    final width = size.width;
+    final height = size.height;
+    final tileWidth = width / 6;
+    final tileHeight = height / 6;
+    final config = _getConfig();
+
+    final tiles = <HamsterTile>[];
+    for (var horizontalIndex = 0; horizontalIndex < 6; horizontalIndex++) {
+      for (var verticalIndex = 0; verticalIndex < 6; verticalIndex++) {
+        final startX = horizontalIndex * tileWidth + 2.5;
+        final startY = verticalIndex * tileHeight + 2.5;
+        final endX = startX + tileWidth - 5;
+        final endY = startY + tileHeight - 5;
+        final rect = Rect.fromLTRB(startX, startY, endX, endY);
+        var tileType = HamsterTileType.normal;
+        var opened = false;
+        if (horizontalIndex == 0) {
+          tileType = HamsterTileType.leftHeader;
+          opened = true;
+        } else if (verticalIndex == 0) {
+          tileType = HamsterTileType.topHeader;
+          opened = true;
+        } else {
+          opened = openedTiles
+              .where(
+                (element) =>
+            element.boardX == horizontalIndex &&
+                element.boardY == verticalIndex,
+          )
+              .isNotEmpty;
+        }
+
+        final tileConfig = config.tiles
+            .where(
+              (element) =>
+          element.boardX == horizontalIndex &&
+              element.boardY == verticalIndex,
+        )
+            .toList()
+            .firstOrNull;
+
+        final tile = HamsterTile(
+            type: tileType,
+            boardX: horizontalIndex,
+            boardY: verticalIndex,
+            rect: rect,
+            opened: opened,
+            config: tileConfig);
+        tiles.add(tile);
+      }
+    }
+    return tiles;
+  }
+
+  HamsterMaterial _getConfig() {
+    return HamsterMaterial.fromJson(
+        jsonDecode(widget.material.config) as Map<String, dynamic>);
+  }
+}
+
+class _HamsterItem extends StatelessWidget {
+  const _HamsterItem({super.key, required this.tile});
+
+  final HamsterTile tile;
+
+  @override
+  Widget build(BuildContext context) {
+    if (tile.config == null) {
+      return const SizedBox();
+    }
+    return Positioned(
+        left: tile.rect.left,
+        top: tile.rect.top,
+        width: tile.rect.width,
+        height: tile.rect.height,
+        child: Image.network(tile.config!.imageUrl)
+    );
   }
 }
 
 
+class _HamsterCard extends StatelessWidget {
+  const _HamsterCard({required this.tile, required this.onPressed});
+
+  final HamsterTile tile;
+  final void Function(HamsterTile tile) onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: tile.rect.left,
+      top: tile.rect.top,
+      width: tile.rect.width,
+      height: tile.rect.height,
+      child: Card(
+        color: Colors.amber,
+        child: InkWell(
+          onTap: () {
+            onPressed(tile);
+          },
+        ),
+      ),
+    );
+  }
+}
+
 class _HamsterPainter extends CustomPainter {
-  static const _leftHeader = 'LEFT';
-  static const _topHeader = 'TOP';
-  static const _normalTile = 'NORMAL';
+  _HamsterPainter({required this.config, required this.tiles});
+
+  final HamsterConfig config;
+  final List<HamsterTile> tiles;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -47,36 +199,35 @@ class _HamsterPainter extends CustomPainter {
     final height = size.height;
     final paint = _getLinePaint();
     for (var verticalLineIndex = 0;
-        verticalLineIndex <= 6;
-        verticalLineIndex++) {
+    verticalLineIndex <= 6;
+    verticalLineIndex++) {
       final xPos = width / 6 * verticalLineIndex;
       canvas.drawLine(Offset(xPos, 0), Offset(xPos, height), paint);
     }
 
     for (var horizontalLineIndex = 0;
-        horizontalLineIndex <= 6;
-        horizontalLineIndex++) {
+    horizontalLineIndex <= 6;
+    horizontalLineIndex++) {
       final yPos = height / 6 * horizontalLineIndex;
       canvas.drawLine(Offset(0, yPos), Offset(width, yPos), paint);
     }
   }
 
   void _paintHeaders(Canvas canvas, Size size) {
-    final tilesPositions = _getTilesPosition(size);
-
     // ignore: cascade_invocations
-    tilesPositions.forEach((key, value) {
-      canvas.drawRect(value, Paint()..color = Colors.blue);
-      if (key.startsWith(_normalTile) || key == '${_leftHeader}_0') {
+    tiles.forEach((value) {
+      canvas.drawRect(value.rect, Paint()
+        ..color = Colors.blue);
+      if (value.type == HamsterTileType.normal) {
         return;
       }
 
-      final textStyle = const TextStyle(
+      const textStyle = TextStyle(
         color: Colors.black,
         fontSize: 12,
       );
       final textSpan = TextSpan(
-        text: _getTileName(key),
+        text: _getTileName(value),
         style: textStyle,
       );
       final textPainter = TextPainter(
@@ -87,50 +238,23 @@ class _HamsterPainter extends CustomPainter {
         minWidth: 0,
       );
 
-      final offset = Offset(
-          (value.left + value.right) / 2, (value.top + value.bottom) / 2);
+      final rect = value.rect;
+      final offset =
+      Offset((rect.left + rect.right) / 2, (rect.top + rect.bottom) / 2);
       textPainter.paint(canvas, offset);
     });
   }
 
-  String _getTileName(String keyName) {
-    if (keyName.startsWith(_leftHeader)) {
-      final split = keyName.split('_');
-      return split[1];
-    } else if (keyName.startsWith(_topHeader)) {
-      final split = keyName.split('_');
-      return split[1];
-    } else {
-      return keyName;
-    }
-  }
+  String _getTileName(HamsterTile hamsterTile) {
+    switch (hamsterTile.type) {
+      case HamsterTileType.leftHeader:
+        return hamsterTile.boardY.toString();
+      case HamsterTileType.topHeader:
+        return hamsterTile.boardX.toString();
 
-  Map<String, Rect> _getTilesPosition(Size size) {
-    final width = size.width;
-    final height = size.height;
-    final tileWidth = width / 6;
-    final tileHeight = height / 6;
-
-    final tilesPositions = <String, Rect>{};
-    for (var horizontalIndex = 0; horizontalIndex < 6; horizontalIndex++) {
-      for (var verticalIndex = 0; verticalIndex < 6; verticalIndex++) {
-        final startX = horizontalIndex * tileWidth + 2.5;
-        final startY = verticalIndex * tileHeight + 2.5;
-        final endX = startX + tileWidth - 5;
-        final endY = startY + tileHeight - 5;
-        final rect = Rect.fromLTRB(startX, startY, endX, endY);
-        var tileName = '';
-        if (horizontalIndex == 0) {
-          tileName = '${_leftHeader}_$verticalIndex';
-        } else if (verticalIndex == 0) {
-          tileName = '${_topHeader}_$horizontalIndex';
-        } else {
-          tileName = '${_normalTile}_${horizontalIndex}_$verticalIndex';
-        }
-        tilesPositions[tileName] = rect;
-      }
+      case HamsterTileType.normal:
+        return "";
     }
-    return tilesPositions;
   }
 
   Paint _getLinePaint() {

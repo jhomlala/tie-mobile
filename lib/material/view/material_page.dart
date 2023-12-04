@@ -22,7 +22,7 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
       body: Container(
         padding: const EdgeInsets.all(32),child: Column(
         children: [
-          Text(widget.material.toString()),
+          //Text(widget.material.toString()),
           SizedBox(
             width: shortestSize,
             height: shortestSize,
