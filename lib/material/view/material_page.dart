@@ -1,6 +1,9 @@
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:game/game.dart';
+import 'package:tie_mobile/material/bloc/material_bloc.dart' as material_bloc;
+import 'package:ui/ui.dart';
 
 class TieMaterialPage extends StatefulWidget {
   const TieMaterialPage({required this.material, super.key});
@@ -12,36 +15,102 @@ class TieMaterialPage extends StatefulWidget {
 }
 
 class _TieMaterialPageState extends State<TieMaterialPage> {
+  GlobalKey _gameKey = GlobalKey();
+
   TieMaterial get material => widget.material;
+
+  material_bloc.MaterialBloc get bloc => context.bloc();
 
   @override
   Widget build(BuildContext context) {
     final shortestSize = context.deviceSize().shortestSide;
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          children: [
-            //Text(widget.material.toString()),
-            SizedBox(
-              width: shortestSize,
-              height: shortestSize,
-              child: _getGame(),
-            ),
-          ],
+    return BlocBuilder<material_bloc.MaterialBloc, material_bloc.MaterialState>(
+        builder: (context, state) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Container(
+          padding: const EdgeInsets.all(32),
+          child: Stack(
+            children: [
+              _GameWrapper(
+                disableInput: state.isFinished,
+                size: shortestSize,
+                gameKey: _gameKey,
+                child: _getGame(),
+              ),
+              if (state.isFinished)
+                _GameFinished(
+                  onRetryClicked: () {
+                    bloc.add(const material_bloc.MaterialRestartGame());
+                  },
+                )
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _getGame() {
     switch (material.type) {
       case 'hamster':
-        return HamsterFactory().getHamsterGame(material, (event) {
-          Log.info("Received game event:" + event.toString());
-        });
+        return HamsterFactory().getHamsterGame(material, _handleGameEvent);
     }
     throw TieUnknownGameError('Unknown game: ${material.type}');
+  }
+
+  void _handleGameEvent(GameEvents event) {
+    Log.info('Received game event:' + event.toString());
+    switch (event.runtimeType) {
+      case GameStarted:
+        break;
+      case GameFinished:
+        bloc.add(const material_bloc.MaterialGameFinished());
+        break;
+    }
+  }
+}
+
+class _GameWrapper extends StatelessWidget {
+  const _GameWrapper({
+    required this.disableInput,
+    required this.size,
+    required this.child,
+    required this.gameKey,
+  });
+
+  final bool disableInput;
+  final double size;
+  final Widget child;
+  final Key gameKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final widget = SizedBox(
+      width: size,
+      height: size,
+      child: child,
+      key: gameKey,
+    );
+
+    if (disableInput) {
+      return AbsorbPointer(child: widget);
+    } else {
+      return widget;
+    }
+  }
+}
+
+class _GameFinished extends StatelessWidget {
+  const _GameFinished({required this.onRetryClicked});
+
+  final void Function() onRetryClicked;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      const Text('Game has finished!'),
+      ElevatedButton(onPressed: onRetryClicked, child: const Text('Retry')),
+    ]);
   }
 }

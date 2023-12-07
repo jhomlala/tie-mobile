@@ -25,13 +25,11 @@ class MaterialsBloc extends Bloc<MaterialsEvent, MaterialsState> {
   ) async {
     final materialsResult = await materialsRepository.getMaterials();
     materialsResult.fold(
-      (left) => {
-        //TODO: Handle error
-      },
-      (right) {
-        Log.info("Selected materials: " + right.toString());
-        emit(state.copyWith(materials: right));
-      }
-    );
+        (left) => {
+              //TODO: Handle error
+            }, (right) {
+      Log.info("Selected materials: " + right.toString());
+      emit(state.copyWith(materials: right));
+    });
   }
 }

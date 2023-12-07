@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:tie_mobile/app/router.dart';
 import 'package:tie_mobile/main/bloc/main/main_bloc.dart';
 import 'package:tie_mobile/main/bloc/materials/materials_bloc.dart';
+import 'package:tie_mobile/material/bloc/material_bloc.dart';
 
 class TieApp extends StatefulWidget {
   const TieApp({super.key});
@@ -28,7 +29,12 @@ class _TieAppState extends State<TieApp> {
               materialsRepository: GetIt.I.get(),
             );
           },
-        )
+        ),
+        BlocProvider<MaterialBloc>(
+          create: (context) {
+            return MaterialBloc();
+          },
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: router,

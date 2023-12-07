@@ -1,5 +1,5 @@
 import 'package:domain/domain.dart';
-import 'package:flutter/material.dart';
+import 'package:equatable/equatable.dart';
 
 enum HamsterTileType {
   leftHeader,
@@ -7,8 +7,8 @@ enum HamsterTileType {
   normal,
 }
 
-class HamsterTile {
-  HamsterTile({
+class HamsterTile extends Equatable {
+  const HamsterTile({
     required this.type,
     required this.boardX,
     required this.boardY,
@@ -20,7 +20,11 @@ class HamsterTile {
   final HamsterTileType type;
   final int boardX;
   final int boardY;
-  final Rect rect;
+  final GameRect rect;
   final bool opened;
   final HamsterMaterialTile? config;
+
+  @override
+  List<Object?> get props => [type, boardY, boardY, rect, opened, config];
+
 }

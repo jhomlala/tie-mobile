@@ -22,7 +22,6 @@ class HamsterGame extends StatefulWidget {
 class _HamsterGameState extends State<HamsterGame> {
   late HamsterConfig _hamsterConfig;
   late List<HamsterTile> _hamsterTiles;
-  List<HamsterTile> openedTiles = [];
 
   HamsterBloc get bloc => context.bloc<HamsterBloc>();
 
@@ -38,13 +37,25 @@ class _HamsterGameState extends State<HamsterGame> {
       builder: (context, state) {
         return Column(
           children: [
-            Text("Score: ${state.score} steps: ${state.steps}"),
+            Text('Score: ${state.score} steps: ${state.steps}'),
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  _hamsterTiles = _getTiles(
-                    Size(constraints.maxWidth, constraints.maxHeight),
-                  );
+                  if (state.material == null) {
+                    bloc.add(
+                      HamsterEvent.initialise(
+                          material: widget.material,
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight),
+                    );
+                  }
+
+                  _hamsterTiles = state.tiles;
+
+                  if (_hamsterTiles.isEmpty) {
+                    return const CircularProgressIndicator();
+                  }
+
                   final hamsterTilesNotOpened =
                       _hamsterTiles.where((element) => !element.opened);
 
@@ -79,6 +90,7 @@ class _HamsterGameState extends State<HamsterGame> {
     if (tile.config!.isHamster) {
       _updateScore(scoreToAdd: 100);
       bloc.add(const HamsterEvent.onGameFinished());
+      bloc.add(HamsterEvent.onTileOpened(tile: tile));
       await HamsterDialog.showHamsterDialog(context, tile);
     } else {
       await HamsterDialog.showTileQuestionDialog(
@@ -88,10 +100,8 @@ class _HamsterGameState extends State<HamsterGame> {
       );
       _updateSteps();
       _updateScore(scoreToAdd: 10);
+      bloc.add(HamsterEvent.onTileOpened(tile: tile));
     }
-    setState(() {
-      openedTiles.add(tile);
-    });
   }
 
   void _updateSteps() {
@@ -100,68 +110,6 @@ class _HamsterGameState extends State<HamsterGame> {
 
   void _updateScore({required int scoreToAdd}) {
     bloc.add(HamsterEvent.updateScore(score: bloc.state.score + scoreToAdd));
-  }
-
-  List<HamsterTile> _getTiles(Size size) {
-    final width = size.width;
-    final height = size.height;
-    final tileWidth = width / 6;
-    final tileHeight = height / 6;
-    final config = _getConfig();
-
-    final tiles = <HamsterTile>[];
-    for (var horizontalIndex = 0; horizontalIndex < 6; horizontalIndex++) {
-      for (var verticalIndex = 0; verticalIndex < 6; verticalIndex++) {
-        final startX = horizontalIndex * tileWidth + 2.5;
-        final startY = verticalIndex * tileHeight + 2.5;
-        final endX = startX + tileWidth - 5;
-        final endY = startY + tileHeight - 5;
-        final rect = Rect.fromLTRB(startX, startY, endX, endY);
-        var tileType = HamsterTileType.normal;
-        var opened = false;
-        if (horizontalIndex == 0) {
-          tileType = HamsterTileType.leftHeader;
-          opened = true;
-        } else if (verticalIndex == 0) {
-          tileType = HamsterTileType.topHeader;
-          opened = true;
-        } else {
-          opened = openedTiles
-              .where(
-                (element) =>
-                    element.boardX == horizontalIndex &&
-                    element.boardY == verticalIndex,
-              )
-              .isNotEmpty;
-        }
-
-        final tileConfig = config.tiles
-            .where(
-              (element) =>
-                  element.boardX == horizontalIndex &&
-                  element.boardY == verticalIndex,
-            )
-            .toList()
-            .firstOrNull;
-
-        final tile = HamsterTile(
-          type: tileType,
-          boardX: horizontalIndex,
-          boardY: verticalIndex,
-          rect: rect,
-          opened: opened,
-          config: tileConfig,
-        );
-        tiles.add(tile);
-      }
-    }
-    return tiles;
-  }
-
-  HamsterMaterial _getConfig() {
-    return HamsterMaterial.fromJson(
-      jsonDecode(widget.material.config) as Map<String, dynamic>,
-    );
   }
 }
 
@@ -245,7 +193,10 @@ class _HamsterPainter extends CustomPainter {
   void _paintHeaders(Canvas canvas, Size size) {
     // ignore: cascade_invocations
     for (final value in tiles) {
-      canvas.drawRect(value.rect, Paint()..color = Colors.blue);
+      canvas.drawRect(
+          Rect.fromLTRB(value.rect.left, value.rect.top, value.rect.right,
+              value.rect.bottom),
+          Paint()..color = Colors.blue);
       if (value.type == HamsterTileType.normal) {
         continue;
       }
