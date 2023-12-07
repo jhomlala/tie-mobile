@@ -14,7 +14,10 @@ class MaterialBloc extends Bloc<MaterialEvent, MaterialState> {
   MaterialBloc() : super(MaterialState.initial()) {
     on<MaterialGameFinished>(_onMaterialGameFinished);
     on<MaterialRestartGame>(_onMaterialRestartGame);
+    on<MaterialGameInitGameController>(_onMaterialGameInitGameController);
   }
+
+  late GameController gameController;
 
   FutureOr<void> _onMaterialGameFinished(
       MaterialGameFinished event, Emitter<MaterialState> emit) {
@@ -22,7 +25,22 @@ class MaterialBloc extends Bloc<MaterialEvent, MaterialState> {
   }
 
   FutureOr<void> _onMaterialRestartGame(
-      MaterialRestartGame event, Emitter<MaterialState> emit) {
+    MaterialRestartGame event,
+    Emitter<MaterialState> emit,
+  ) {
+    gameController.handleCommand(RestartGame());
     emit(state.copyWith(isFinished: false));
+  }
+
+  FutureOr<void> _onMaterialGameInitGameController(
+      MaterialGameInitGameController event, Emitter<MaterialState> emit) {
+    gameController = event.gameController;
+    gameController.gameEventsStream.listen((event) {
+      switch (event.runtimeType) {
+        case GameFinished:
+          add(const MaterialGameFinished());
+          break;
+      }
+    });
   }
 }

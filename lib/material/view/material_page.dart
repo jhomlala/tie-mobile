@@ -27,7 +27,10 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
     return BlocBuilder<material_bloc.MaterialBloc, material_bloc.MaterialState>(
         builder: (context, state) {
       return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(leading: BackButton(onPressed: (){
+          bloc.add(const material_bloc.MaterialRestartGame());
+          Navigator.of(context).pop();
+        },),),
         body: Container(
           padding: const EdgeInsets.all(32),
           child: Stack(
@@ -41,6 +44,7 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
               if (state.isFinished)
                 _GameFinished(
                   onRetryClicked: () {
+                    print("Retry clicked");
                     bloc.add(const material_bloc.MaterialRestartGame());
                   },
                 )
@@ -54,20 +58,17 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
   Widget _getGame() {
     switch (material.type) {
       case 'hamster':
-        return HamsterFactory().getHamsterGame(material, _handleGameEvent);
+        final tuple = HamsterFactory.instance.getHamsterGame(material);
+        final controller = tuple.value1;
+        bloc.add(
+          material_bloc.MaterialGameInitGameController(
+            gameController: controller,
+          ),
+        );
+        final widget = tuple.value2;
+        return widget;
     }
     throw TieUnknownGameError('Unknown game: ${material.type}');
-  }
-
-  void _handleGameEvent(GameEvents event) {
-    Log.info('Received game event:' + event.toString());
-    switch (event.runtimeType) {
-      case GameStarted:
-        break;
-      case GameFinished:
-        bloc.add(const material_bloc.MaterialGameFinished());
-        break;
-    }
   }
 }
 
@@ -89,8 +90,8 @@ class _GameWrapper extends StatelessWidget {
     final widget = SizedBox(
       width: size,
       height: size,
-      child: child,
       key: gameKey,
+      child: child,
     );
 
     if (disableInput) {

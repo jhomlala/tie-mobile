@@ -20,15 +20,12 @@ class HamsterGame extends StatefulWidget {
 }
 
 class _HamsterGameState extends State<HamsterGame> {
-  late HamsterConfig _hamsterConfig;
-  late List<HamsterTile> _hamsterTiles;
 
   HamsterBloc get bloc => context.bloc<HamsterBloc>();
 
   @override
   void initState() {
     super.initState();
-    _hamsterConfig = HamsterConfig();
   }
 
   @override
@@ -44,26 +41,28 @@ class _HamsterGameState extends State<HamsterGame> {
                   if (state.material == null) {
                     bloc.add(
                       HamsterEvent.initialise(
-                          material: widget.material,
-                          width: constraints.maxWidth,
-                          height: constraints.maxHeight),
+                        material: widget.material,
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight,
+                      ),
                     );
                   }
 
-                  _hamsterTiles = state.tiles;
+                  final _hamsterTiles = state.tiles;
 
                   if (_hamsterTiles.isEmpty) {
                     return const CircularProgressIndicator();
                   }
 
-                  final hamsterTilesNotOpened =
-                      _hamsterTiles.where((element) => !element.opened);
+                  final hamsterTilesNotOpened = _hamsterTiles.where((element) =>
+                      element.type == HamsterTileType.normal &&
+                      !element.opened);
 
                   return Stack(
                     children: [
                       CustomPaint(
                         painter: _HamsterPainter(
-                          config: _hamsterConfig,
+                          config: bloc.hamsterConfig,
                           tiles: _hamsterTiles,
                         ),
                         size: Size(constraints.maxWidth, constraints.maxHeight),

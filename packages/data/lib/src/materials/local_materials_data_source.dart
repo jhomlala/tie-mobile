@@ -14,12 +14,12 @@ class LocalMaterialsDataSource extends MaterialsDataSource {
             type: 'hamster',
             image: 'https://cdn-icons-png.flaticon.com/512/6807/6807896.png',
             config: jsonEncode(_getHamsterMaterial().toJson())),
-        const TieMaterial(
+        TieMaterial(
           id: '2',
           name: 'Hamster 2',
           type: 'hamster',
           image: 'https://cdn-icons-png.flaticon.com/512/6807/6807896.png',
-          config: '{}',
+          config: jsonEncode(_getHamsterMaterial().toJson())
         ),
         const TieMaterial(
           id: '3',

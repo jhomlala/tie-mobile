@@ -18,4 +18,6 @@ class HamsterEvent with _$HamsterEvent {
 
   const factory HamsterEvent.onTileOpened({required HamsterTile tile}) =
       HamsterTileOpened;
+
+  const factory HamsterEvent.onGameRestart() = HamsterGameRestart;
 }
