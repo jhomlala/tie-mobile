@@ -5,4 +5,5 @@ extension ContextExtension on BuildContext {
   Size deviceSize() {
     return MediaQuery.of(this).size;
   }
+
 }

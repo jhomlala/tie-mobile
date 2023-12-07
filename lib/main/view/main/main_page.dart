@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tie_mobile/common/extensions/context_ext.dart';
 import 'package:tie_mobile/main/bloc/main/main_bloc.dart';
 import 'package:tie_mobile/main/view/materials/materials_page.dart';
+import 'package:ui/ui.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

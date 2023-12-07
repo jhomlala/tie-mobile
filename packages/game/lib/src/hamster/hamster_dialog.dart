@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:game/src/hamster/hamster_tile.dart';
 
 class HamsterDialog {
-  static Future<void> show(
-    BuildContext context,
-    HamsterTile tile,
+  static Future<void> showTileQuestionDialog({
+    required BuildContext context,
+    required HamsterTile tile,
+    required void Function() onWrongAnswer,
+  }
   ) async {
     final deviceSize = context.deviceSize();
     final imageSize = deviceSize.shortestSide / 4;
@@ -37,6 +39,7 @@ class HamsterDialog {
                           Navigator.of(context).pop();
                         } else {
                           setState(() {
+                            onWrongAnswer();
                             isWrongAnswerSelected = true;
                           });
                         }
@@ -55,15 +58,14 @@ class HamsterDialog {
   }
 
   static Future<void> showHamsterDialog(
-      BuildContext context,
-      HamsterTile tile,
-      ) async {
+    BuildContext context,
+    HamsterTile tile,
+  ) async {
     final deviceSize = context.deviceSize();
     final imageSize = deviceSize.shortestSide / 4;
     return showDialog<void>(
       context: context,
       builder: (context) {
-
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(

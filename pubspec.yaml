@@ -16,6 +16,8 @@ dependencies:
     path: packages/data
   game:
     path: packages/game
+  ui:
+    path: packages/ui
 
   equatable: ^2.0.5
   flutter_bloc: ^8.1.3

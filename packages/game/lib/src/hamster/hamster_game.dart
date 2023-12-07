@@ -8,6 +8,7 @@ import 'package:game/src/hamster/bloc/hamster_bloc.dart';
 import 'package:game/src/hamster/hamster_config.dart';
 import 'package:game/src/hamster/hamster_dialog.dart';
 import 'package:game/src/hamster/hamster_tile.dart';
+import 'package:ui/ui.dart';
 
 class HamsterGame extends StatefulWidget with Game {
   const HamsterGame({required this.material, super.key});
@@ -35,6 +36,8 @@ class _HamsterGameState extends State<HamsterGame> {
   late List<HamsterTile> _hamsterTiles;
   List<HamsterTile> openedTiles = [];
 
+  HamsterBloc get bloc => context.bloc<HamsterBloc>();
+
   @override
   void initState() {
     super.initState();
@@ -43,45 +46,71 @@ class _HamsterGameState extends State<HamsterGame> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HamsterBloc, HamsterState>(builder: (context, state) {
-      return LayoutBuilder(
-          builder: (context, constraints) {
-            print(constraints);
-            _hamsterTiles = _getTiles(
-              Size(constraints.maxWidth, constraints.maxHeight),
-            );
-            final hamsterTilesNotOpened =
-                _hamsterTiles.where((element) => !element.opened);
+    return BlocBuilder<HamsterBloc, HamsterState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            Text("Score: ${state.score} steps: ${state.steps}"),
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  _hamsterTiles = _getTiles(
+                    Size(constraints.maxWidth, constraints.maxHeight),
+                  );
+                  final hamsterTilesNotOpened =
+                      _hamsterTiles.where((element) => !element.opened);
 
-            return Stack(
-              children: [
-                CustomPaint(
-                  painter: _HamsterPainter(
-                      config: _hamsterConfig, tiles: _hamsterTiles),
-                ),
-                ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
-                ...hamsterTilesNotOpened.map(
-                  (tile) => _HamsterCard(
-                    tile: tile,
-                    onPressed: onCardPressed,
-                  ),
-                ),
-              ],
-            );
-          },
+                  return Stack(
+                    children: [
+                      CustomPaint(
+                        painter: _HamsterPainter(
+                          config: _hamsterConfig,
+                          tiles: _hamsterTiles,
+                        ),
+                        size: Size(constraints.maxWidth, constraints.maxHeight),
+                      ),
+                      ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
+                      ...hamsterTilesNotOpened.map(
+                        (tile) => _HamsterCard(
+                          tile: tile,
+                          onPressed: onCardPressed,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            )
+          ],
         );
-    });
+      },
+    );
   }
 
   Future<void> onCardPressed(HamsterTile tile) async {
     if (tile.config!.isHamster) {
+      updateScore(scoreToAdd: 100);
       await HamsterDialog.showHamsterDialog(context, tile);
     } else {
-      await HamsterDialog.show(context, tile);
+      await HamsterDialog.showTileQuestionDialog(
+        context: context,
+        tile: tile,
+        onWrongAnswer: updateSteps,
+      );
+      updateSteps();
+      updateScore(scoreToAdd: 10);
     }
     setState(() {
       openedTiles.add(tile);
     });
+  }
+
+  void updateSteps() {
+    bloc.add(HamsterEvent.updateSteps(steps: bloc.state.steps + 1));
+  }
+
+  void updateScore({required int scoreToAdd}){
+    bloc.add(HamsterEvent.updateScore(score: bloc.state.score + scoreToAdd));
   }
 
   List<HamsterTile> _getTiles(Size size) {
@@ -208,10 +237,12 @@ class _HamsterPainter extends CustomPainter {
     final width = size.width;
     final height = size.height;
     final paint = _getLinePaint();
+    print("Width: " + width.toString() + " " + height.toString());
     for (var verticalLineIndex = 0;
         verticalLineIndex <= 6;
         verticalLineIndex++) {
       final xPos = width / 6 * verticalLineIndex;
+
       canvas.drawLine(Offset(xPos, 0), Offset(xPos, height), paint);
     }
 

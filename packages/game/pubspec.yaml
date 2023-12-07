@@ -18,6 +18,8 @@ dependencies:
     sdk: flutter
   domain:
     path: ../domain
+  ui:
+    path: ../ui
 
 dev_dependencies:
   build_runner: ^2.4.6
