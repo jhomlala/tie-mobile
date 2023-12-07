@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tie_mobile/app/router.dart';
-import 'package:ui/ui.dart';
 import 'package:tie_mobile/common/theme/tie_theme.dart';
 import 'package:tie_mobile/main/bloc/materials/materials_bloc.dart';
+import 'package:ui/ui.dart';
 
 class MaterialsPage extends StatefulWidget {
   const MaterialsPage({super.key});

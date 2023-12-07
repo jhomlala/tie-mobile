@@ -8,7 +8,7 @@ part 'hamster_material.g.dart';
 @freezed
 class HamsterMaterial with _$HamsterMaterial {
   const factory HamsterMaterial({
-    @JsonKey(name: 'tiles') required List<HamsterMaterialTile> tiles
+    @JsonKey(name: 'tiles') required List<HamsterMaterialTile> tiles,
   }) = _HamsterMaterial;
 
   factory HamsterMaterial.fromJson(Map<String, Object?> json) =>

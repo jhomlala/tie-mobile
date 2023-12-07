@@ -15,7 +15,7 @@ class TieMaterialPage extends StatefulWidget {
 }
 
 class _TieMaterialPageState extends State<TieMaterialPage> {
-  GlobalKey _gameKey = GlobalKey();
+  final GlobalKey _gameKey = GlobalKey();
 
   TieMaterial get material => widget.material;
 
@@ -25,34 +25,36 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
   Widget build(BuildContext context) {
     final shortestSize = context.deviceSize().shortestSide;
     return BlocBuilder<material_bloc.MaterialBloc, material_bloc.MaterialState>(
-        builder: (context, state) {
-      return Scaffold(
-        appBar: AppBar(leading: BackButton(onPressed: (){
-          bloc.add(const material_bloc.MaterialRestartGame());
-          Navigator.of(context).pop();
-        },),),
-        body: Container(
-          padding: const EdgeInsets.all(32),
-          child: Stack(
-            children: [
-              _GameWrapper(
-                disableInput: state.isFinished,
-                size: shortestSize,
-                gameKey: _gameKey,
-                child: _getGame(),
-              ),
-              if (state.isFinished)
-                _GameFinished(
-                  onRetryClicked: () {
-                    print("Retry clicked");
-                    bloc.add(const material_bloc.MaterialRestartGame());
-                  },
-                )
-            ],
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            leading: BackButton(
+              onPressed: () {
+                _restartGame();
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-        ),
-      );
-    });
+          body: Container(
+            padding: const EdgeInsets.all(32),
+            child: Stack(
+              children: [
+                _GameWrapper(
+                  disableInput: state.isFinished,
+                  size: shortestSize,
+                  gameKey: _gameKey,
+                  child: _getGame(),
+                ),
+                if (state.isFinished)
+                  _GameFinished(
+                    onRetryClicked: _restartGame,
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _getGame() {
@@ -69,6 +71,10 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
         return widget;
     }
     throw TieUnknownGameError('Unknown game: ${material.type}');
+  }
+
+  void _restartGame() {
+    bloc.add(const material_bloc.MaterialRestartGame());
   }
 }
 
@@ -109,9 +115,11 @@ class _GameFinished extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      const Text('Game has finished!'),
-      ElevatedButton(onPressed: onRetryClicked, child: const Text('Retry')),
-    ]);
+    return Column(
+      children: [
+        const Text('Game has finished!'),
+        ElevatedButton(onPressed: onRetryClicked, child: const Text('Retry')),
+      ],
+    );
   }
 }

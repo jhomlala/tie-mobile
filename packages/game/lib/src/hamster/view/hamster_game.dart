@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,6 @@ class HamsterGame extends StatefulWidget {
 }
 
 class _HamsterGameState extends State<HamsterGame> {
-
   HamsterBloc get bloc => context.bloc<HamsterBloc>();
 
   @override
@@ -48,27 +46,23 @@ class _HamsterGameState extends State<HamsterGame> {
                     );
                   }
 
-                  final _hamsterTiles = state.tiles;
+                  final hamsterTiles = state.tiles;
 
-                  if (_hamsterTiles.isEmpty) {
+                  if (hamsterTiles.isEmpty) {
                     return const CircularProgressIndicator();
                   }
-
-                  final hamsterTilesNotOpened = _hamsterTiles.where((element) =>
-                      element.type == HamsterTileType.normal &&
-                      !element.opened);
 
                   return Stack(
                     children: [
                       CustomPaint(
                         painter: _HamsterPainter(
                           config: bloc.hamsterConfig,
-                          tiles: _hamsterTiles,
+                          tiles: hamsterTiles,
                         ),
                         size: Size(constraints.maxWidth, constraints.maxHeight),
                       ),
-                      ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
-                      ...hamsterTilesNotOpened.map(
+                      ...hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
+                      ...bloc.hamsterTilesNotOpened.map(
                         (tile) => _HamsterCard(
                           tile: tile,
                           onPressed: _onCardPressed,
@@ -78,7 +72,7 @@ class _HamsterGameState extends State<HamsterGame> {
                   );
                 },
               ),
-            )
+            ),
           ],
         );
       },
@@ -88,8 +82,9 @@ class _HamsterGameState extends State<HamsterGame> {
   Future<void> _onCardPressed(HamsterTile tile) async {
     if (tile.config!.isHamster) {
       _updateScore(scoreToAdd: 100);
-      bloc.add(const HamsterEvent.onGameFinished());
-      bloc.add(HamsterEvent.onTileOpened(tile: tile));
+      bloc
+        ..add(const HamsterEvent.onGameFinished())
+        ..add(HamsterEvent.onTileOpened(tile: tile));
       await HamsterDialog.showHamsterDialog(context, tile);
     } else {
       await HamsterDialog.showTileQuestionDialog(
@@ -193,9 +188,14 @@ class _HamsterPainter extends CustomPainter {
     // ignore: cascade_invocations
     for (final value in tiles) {
       canvas.drawRect(
-          Rect.fromLTRB(value.rect.left, value.rect.top, value.rect.right,
-              value.rect.bottom),
-          Paint()..color = Colors.blue);
+        Rect.fromLTRB(
+          value.rect.left,
+          value.rect.top,
+          value.rect.right,
+          value.rect.bottom,
+        ),
+        Paint()..color = Colors.blue,
+      );
       if (value.type == HamsterTileType.normal) {
         continue;
       }

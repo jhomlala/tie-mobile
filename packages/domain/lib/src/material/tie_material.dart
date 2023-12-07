@@ -8,10 +8,9 @@ class TieMaterial with _$TieMaterial {
     @JsonKey(name: 'name') required String name,
     @JsonKey(name: 'type') required String type,
     @JsonKey(name: 'image') required String image,
-    @JsonKey(name: 'config') required String config
+    @JsonKey(name: 'config') required String config,
   }) = _TieMaterial;
 
   factory TieMaterial.fromJson(Map<String, Object?> json) =>
       _$TieMaterialFromJson(json);
-
 }

@@ -25,10 +25,10 @@ class MaterialsBloc extends Bloc<MaterialsEvent, MaterialsState> {
   ) async {
     final materialsResult = await materialsRepository.getMaterials();
     materialsResult.fold(
+        // ignore: inference_failure_on_collection_literal
         (left) => {
               //TODO: Handle error
             }, (right) {
-      Log.info("Selected materials: " + right.toString());
       emit(state.copyWith(materials: right));
     });
   }

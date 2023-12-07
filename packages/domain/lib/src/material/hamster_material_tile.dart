@@ -1,4 +1,3 @@
-import 'package:domain/src/material/hamster_material.dart';
 import 'package:domain/src/material/hamster_material_answer.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,8 +12,8 @@ class HamsterMaterialTile with _$HamsterMaterialTile {
     @JsonKey(name: 'boardY') required final int boardY,
     @JsonKey(name: 'imageUrl') required final String imageUrl,
     @JsonKey(name: 'isHamster') required final bool isHamster,
-    @JsonKey(name: 'answers') required final List<HamsterMaterialAnswer> answers
-
+    @JsonKey(name: 'answers')
+    required final List<HamsterMaterialAnswer> answers,
   }) = _HamsterMaterialTile;
 
   factory HamsterMaterialTile.fromJson(Map<String, Object?> json) =>

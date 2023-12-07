@@ -17,12 +17,11 @@ class _MainPageState extends State<MainPage> {
     return BlocConsumer<MainBloc, MainState>(
       builder: (BuildContext context, MainState state) {
         return Scaffold(
-          bottomNavigationBar: _MainPageBottomNavigationBar(),
-          body: IndexedStack(index: state.pageIndex, children: [
-            Text("Home"),
-            MaterialsPage(),
-            Text("Settings")
-          ],)
+          bottomNavigationBar: const _MainPageBottomNavigationBar(),
+          body: IndexedStack(
+            index: state.pageIndex,
+            children: const [Text('Home'), MaterialsPage(), Text('Settings')],
+          ),
         );
       },
       listener: (BuildContext context, MainState state) {},
@@ -31,7 +30,7 @@ class _MainPageState extends State<MainPage> {
 }
 
 class _MainPageBottomNavigationBar extends StatelessWidget {
-  const _MainPageBottomNavigationBar({super.key});
+  const _MainPageBottomNavigationBar();
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,6 @@ class _MainPageBottomNavigationBar extends StatelessWidget {
       showUnselectedLabels: true,
       currentIndex: mainBloc.state.pageIndex,
       onTap: (index) {
-        print("Set index = " + index.toString());
         mainBloc.add(MainEvent.setPage(index));
       },
       items: [

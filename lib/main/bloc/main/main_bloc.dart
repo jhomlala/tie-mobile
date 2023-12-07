@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:collection';
 
-import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,6 +15,5 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   FutureOr<void> _onSetPage(MainSetPage event, Emitter<MainState> emit) {
     emit(state.copyWith(pageIndex: event.pageIndex));
   }
-
 
 }
