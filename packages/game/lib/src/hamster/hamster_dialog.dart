@@ -53,4 +53,32 @@ class HamsterDialog {
       },
     );
   }
+
+  static Future<void> showHamsterDialog(
+      BuildContext context,
+      HamsterTile tile,
+      ) async {
+    final deviceSize = context.deviceSize();
+    final imageSize = deviceSize.shortestSide / 4;
+    return showDialog<void>(
+      context: context,
+      builder: (context) {
+
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Congratulations! You have found hamster!'),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Image.network(tile.config!.imageUrl, width: imageSize),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 }

@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:game/src/common/game.dart';
+import 'package:game/src/hamster/bloc/hamster_bloc.dart';
 import 'package:game/src/hamster/hamster_config.dart';
 import 'package:game/src/hamster/hamster_dialog.dart';
 import 'package:game/src/hamster/hamster_tile.dart';
@@ -41,35 +43,42 @@ class _HamsterGameState extends State<HamsterGame> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        _hamsterTiles = _getTiles(
-          Size(constraints.maxWidth, constraints.maxHeight),
-        );
-        final hamsterTilesNotOpened =
-            _hamsterTiles.where((element) => !element.opened);
+    return BlocBuilder<HamsterBloc, HamsterState>(builder: (context, state) {
+      return LayoutBuilder(
+          builder: (context, constraints) {
+            print(constraints);
+            _hamsterTiles = _getTiles(
+              Size(constraints.maxWidth, constraints.maxHeight),
+            );
+            final hamsterTilesNotOpened =
+                _hamsterTiles.where((element) => !element.opened);
 
-        return Stack(
-          children: [
-            CustomPaint(
-              painter:
-                  _HamsterPainter(config: _hamsterConfig, tiles: _hamsterTiles),
-            ),
-            ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
-            ...hamsterTilesNotOpened.map(
-              (tile) => _HamsterCard(
-                tile: tile,
-                onPressed: onCardPressed,
-              ),
-            ),
-          ],
+            return Stack(
+              children: [
+                CustomPaint(
+                  painter: _HamsterPainter(
+                      config: _hamsterConfig, tiles: _hamsterTiles),
+                ),
+                ..._hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
+                ...hamsterTilesNotOpened.map(
+                  (tile) => _HamsterCard(
+                    tile: tile,
+                    onPressed: onCardPressed,
+                  ),
+                ),
+              ],
+            );
+          },
         );
-      },
-    );
+    });
   }
 
   Future<void> onCardPressed(HamsterTile tile) async {
-    await HamsterDialog.show(context, tile);
+    if (tile.config!.isHamster) {
+      await HamsterDialog.showHamsterDialog(context, tile);
+    } else {
+      await HamsterDialog.show(context, tile);
+    }
     setState(() {
       openedTiles.add(tile);
     });

@@ -12,6 +12,7 @@ class HamsterMaterialTile with _$HamsterMaterialTile {
     @JsonKey(name: 'boardX') required final int boardX,
     @JsonKey(name: 'boardY') required final int boardY,
     @JsonKey(name: 'imageUrl') required final String imageUrl,
+    @JsonKey(name: 'isHamster') required final bool isHamster,
     @JsonKey(name: 'answers') required final List<HamsterMaterialAnswer> answers
 
   }) = _HamsterMaterialTile;

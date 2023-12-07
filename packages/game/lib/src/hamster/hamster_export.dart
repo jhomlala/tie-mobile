@@ -1,1 +1,1 @@
-export 'hamster_game.dart';
+export 'hamster_factory.dart';

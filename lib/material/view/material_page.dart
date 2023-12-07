@@ -20,23 +20,25 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        padding: const EdgeInsets.all(32),child: Column(
-        children: [
-          //Text(widget.material.toString()),
-          SizedBox(
-            width: shortestSize,
-            height: shortestSize,
-            child: _getGame(),
-          ),
-        ],
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          children: [
+            //Text(widget.material.toString()),
+            SizedBox(
+              width: shortestSize,
+              height: shortestSize,
+              child: _getGame(),
+            ),
+          ],
+        ),
       ),
-    ),);
+    );
   }
 
   Widget _getGame() {
     switch (material.type) {
       case 'hamster':
-        return HamsterGame(material: material);
+        return HamsterFactory().getHamsterGame(material);
     }
     throw TieUnknownGameError('Unknown game: ${material.type}');
   }
