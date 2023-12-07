@@ -1,34 +1,22 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:game/src/common/game.dart';
 import 'package:game/src/hamster/bloc/hamster_bloc.dart';
-import 'package:game/src/hamster/hamster_config.dart';
-import 'package:game/src/hamster/hamster_dialog.dart';
-import 'package:game/src/hamster/hamster_tile.dart';
+import 'package:game/src/hamster/model/hamster_config.dart';
+import 'package:game/src/hamster/model/hamster_tile.dart';
+import 'package:game/src/hamster/view/hamster_dialog.dart';
 import 'package:ui/ui.dart';
 
-class HamsterGame extends StatefulWidget with Game {
+class HamsterGame extends StatefulWidget {
   const HamsterGame({required this.material, super.key});
 
   final TieMaterial material;
 
   @override
   State<HamsterGame> createState() => _HamsterGameState();
-
-  @override
-  Future<void> start() {
-    // TODO: implement start
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> stop() {
-    // TODO: implement stop
-    throw UnimplementedError();
-  }
 }
 
 class _HamsterGameState extends State<HamsterGame> {
@@ -73,7 +61,7 @@ class _HamsterGameState extends State<HamsterGame> {
                       ...hamsterTilesNotOpened.map(
                         (tile) => _HamsterCard(
                           tile: tile,
-                          onPressed: onCardPressed,
+                          onPressed: _onCardPressed,
                         ),
                       ),
                     ],
@@ -87,29 +75,30 @@ class _HamsterGameState extends State<HamsterGame> {
     );
   }
 
-  Future<void> onCardPressed(HamsterTile tile) async {
+  Future<void> _onCardPressed(HamsterTile tile) async {
     if (tile.config!.isHamster) {
-      updateScore(scoreToAdd: 100);
+      _updateScore(scoreToAdd: 100);
+      bloc.add(const HamsterEvent.onGameFinished());
       await HamsterDialog.showHamsterDialog(context, tile);
     } else {
       await HamsterDialog.showTileQuestionDialog(
         context: context,
         tile: tile,
-        onWrongAnswer: updateSteps,
+        onWrongAnswer: _updateSteps,
       );
-      updateSteps();
-      updateScore(scoreToAdd: 10);
+      _updateSteps();
+      _updateScore(scoreToAdd: 10);
     }
     setState(() {
       openedTiles.add(tile);
     });
   }
 
-  void updateSteps() {
+  void _updateSteps() {
     bloc.add(HamsterEvent.updateSteps(steps: bloc.state.steps + 1));
   }
 
-  void updateScore({required int scoreToAdd}){
+  void _updateScore({required int scoreToAdd}) {
     bloc.add(HamsterEvent.updateScore(score: bloc.state.score + scoreToAdd));
   }
 
@@ -237,7 +226,6 @@ class _HamsterPainter extends CustomPainter {
     final width = size.width;
     final height = size.height;
     final paint = _getLinePaint();
-    print("Width: " + width.toString() + " " + height.toString());
     for (var verticalLineIndex = 0;
         verticalLineIndex <= 6;
         verticalLineIndex++) {

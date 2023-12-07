@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,11 +11,13 @@ part 'hamster_event.dart';
 part 'hamster_state.dart';
 
 class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
-  HamsterBloc() : super(HamsterState.initial()) {
+  HamsterBloc({required this.eventCallback}) : super(HamsterState.initial()) {
     on<HamsterUpdateScore>(_onHamsterUpdateScore);
     on<HamsterUpdateStep>(_onHamsterUpdateState);
     on<HamsterGameFinished>(_onHamsterGameFinished);
   }
+
+  final void Function(GameEvents event) eventCallback;
 
   FutureOr<void> _onHamsterUpdateScore(
       HamsterUpdateScore event, Emitter<HamsterState> emit) {
@@ -27,5 +30,9 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
   }
 
   FutureOr<void> _onHamsterGameFinished(
-      HamsterGameFinished event, Emitter<HamsterState> emit) {}
+    HamsterGameFinished event,
+    Emitter<HamsterState> emit,
+  ) {
+    eventCallback(GameFinished(score: state.score, steps: state.steps));
+  }
 }

@@ -38,7 +38,9 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
   Widget _getGame() {
     switch (material.type) {
       case 'hamster':
-        return HamsterFactory().getHamsterGame(material);
+        return HamsterFactory().getHamsterGame(material, (event) {
+          Log.info("Received game event:" + event.toString());
+        });
     }
     throw TieUnknownGameError('Unknown game: ${material.type}');
   }

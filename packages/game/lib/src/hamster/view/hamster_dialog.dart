@@ -1,6 +1,6 @@
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
-import 'package:game/src/hamster/hamster_tile.dart';
+import 'package:game/src/hamster/model/hamster_tile.dart';
 
 class HamsterDialog {
   static Future<void> showTileQuestionDialog({
