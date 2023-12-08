@@ -83,7 +83,7 @@ class HamsterDialog {
                     Navigator.of(context).pop();
                   },
                   child: const Text('OK'),
-                )
+                ),
               ],
             );
           },

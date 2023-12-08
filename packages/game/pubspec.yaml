@@ -1,5 +1,6 @@
 name: game
 description: TIE games.
+publish_to: none
 
 version: 1.0.0+1
 

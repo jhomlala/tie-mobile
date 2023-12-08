@@ -63,9 +63,10 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
     if (shouldInitialise(portraitMode: event.portraitMode)) {
       emit(
         state.copyWith(
-            initialised: true,
-            tiles: _getTiles(event.material, event.width, event.height),
-            portraitMode: event.portraitMode),
+          initialised: true,
+          tiles: _getTiles(event.material, event.width, event.height),
+          portraitMode: event.portraitMode,
+        ),
       );
       _streamSubscription = gameController.gameCommandsStream.listen((event) {
         switch (event.runtimeType) {
