@@ -32,4 +32,4 @@ jobs:
       - name: Run build script
         run: ./scripts/build.sh
       - name: Lint using flutter analyze
-        run: flutter analyze .
+        run: dart analyze .
