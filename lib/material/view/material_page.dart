@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -39,15 +40,20 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
             padding: const EdgeInsets.all(32),
             child: Stack(
               children: [
-                Center(child: _GameWrapper(
-                  disableInput: state.isFinished,
-                  size: shortestSize,
-                  gameKey: _gameKey,
-                  child: _getGame(),
-                ),),
+                Center(
+                  child: _GameWrapper(
+                    disableInput: state.isFinished,
+                    size: shortestSize,
+                    gameKey: _gameKey,
+                    blur: state.isFinished,
+                    child: _getGame(),
+                  ),
+                ),
                 if (state.isFinished)
-                  _GameFinished(
-                    onRetryClicked: _restartGame,
+                  Center(
+                    child: _GameFinished(
+                      onRetryClicked: _restartGame,
+                    ),
                   ),
               ],
             ),
@@ -84,21 +90,31 @@ class _GameWrapper extends StatelessWidget {
     required this.size,
     required this.child,
     required this.gameKey,
+    required this.blur,
   });
 
   final bool disableInput;
   final double size;
   final Widget child;
   final Key gameKey;
+  final bool blur;
 
   @override
   Widget build(BuildContext context) {
-    final widget = SizedBox(
+    Widget widget = SizedBox(
       width: size,
       height: size,
       key: gameKey,
       child: child,
     );
+
+    if (blur) {
+      widget = ImageFiltered(
+        imageFilter:
+            ImageFilter.blur(sigmaX: 10, sigmaY: 10, tileMode: TileMode.decal),
+        child: widget,
+      );
+    }
 
     if (disableInput) {
       return AbsorbPointer(child: widget);
@@ -115,11 +131,20 @@ class _GameFinished extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('Game has finished!'),
-        ElevatedButton(onPressed: onRetryClicked, child: const Text('Retry')),
-      ],
+    return Container(
+      padding: const EdgeInsets.all(32),
+      color: Colors.black54,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'Game has finished!',
+            style: TextStyle(color: Colors.white),
+          ),
+          ElevatedButton(onPressed: onRetryClicked, child: const Text('Retry')),
+        ],
+      ),
     );
   }
 }
