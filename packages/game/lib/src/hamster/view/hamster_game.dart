@@ -30,51 +30,57 @@ class _HamsterGameState extends State<HamsterGame> {
   Widget build(BuildContext context) {
     return BlocBuilder<HamsterBloc, HamsterState>(
       builder: (context, state) {
-        return Column(
-          children: [
-            Text('Score: ${state.score} steps: ${state.steps}'),
-            Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  if (state.material == null) {
-                    bloc.add(
-                      HamsterEvent.initialise(
-                        material: widget.material,
-                        width: constraints.maxWidth,
-                        height: constraints.maxHeight,
-                      ),
+        return OrientationBuilder(builder: (context, orientation) {
+          return Column(
+            children: [
+              Text('Score: ${state.score} steps: ${state.steps}'),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (bloc.shouldInitialise(
+                      portraitMode: orientation == Orientation.portrait,
+                    )) {
+                      bloc.add(
+                        HamsterEvent.initialise(
+                          material: widget.material,
+                          width: constraints.maxWidth,
+                          height: constraints.maxHeight,
+                          portraitMode: orientation == Orientation.portrait,
+                        ),
+                      );
+                    }
+
+                    final hamsterTiles = state.tiles;
+
+                    if (hamsterTiles.isEmpty) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    return Stack(
+                      children: [
+                        CustomPaint(
+                          painter: _HamsterPainter(
+                            config: bloc.hamsterConfig,
+                            tiles: hamsterTiles,
+                          ),
+                          size:
+                              Size(constraints.maxWidth, constraints.maxHeight),
+                        ),
+                        ...hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
+                        ...bloc.hamsterTilesNotOpened.map(
+                          (tile) => _HamsterCard(
+                            tile: tile,
+                            onPressed: _onCardPressed,
+                          ),
+                        ),
+                      ],
                     );
-                  }
-
-                  final hamsterTiles = state.tiles;
-
-                  if (hamsterTiles.isEmpty) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  return Stack(
-                    children: [
-                      CustomPaint(
-                        painter: _HamsterPainter(
-                          config: bloc.hamsterConfig,
-                          tiles: hamsterTiles,
-                        ),
-                        size: Size(constraints.maxWidth, constraints.maxHeight),
-                      ),
-                      ...hamsterTiles.map((tile) => _HamsterItem(tile: tile)),
-                      ...bloc.hamsterTilesNotOpened.map(
-                        (tile) => _HamsterCard(
-                          tile: tile,
-                          onPressed: _onCardPressed,
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                  },
+                ),
               ),
-            ),
-          ],
-        );
+            ],
+          );
+        });
       },
     );
   }

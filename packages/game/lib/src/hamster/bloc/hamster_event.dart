@@ -6,6 +6,7 @@ class HamsterEvent with _$HamsterEvent {
     required TieMaterial material,
     required double width,
     required double height,
+    required bool portraitMode,
   }) = HamsterInitialise;
 
   const factory HamsterEvent.updateScore({required int score}) =

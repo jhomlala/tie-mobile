@@ -39,12 +39,12 @@ class _TieMaterialPageState extends State<TieMaterialPage> {
             padding: const EdgeInsets.all(32),
             child: Stack(
               children: [
-                _GameWrapper(
+                Center(child: _GameWrapper(
                   disableInput: state.isFinished,
                   size: shortestSize,
                   gameKey: _gameKey,
                   child: _getGame(),
-                ),
+                ),),
                 if (state.isFinished)
                   _GameFinished(
                     onRetryClicked: _restartGame,

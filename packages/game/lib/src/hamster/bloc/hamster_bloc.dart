@@ -61,11 +61,12 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
     HamsterInitialise event,
     Emitter<HamsterState> emit,
   ) {
-    if (!state.initialised) {
+    if (shouldInitialise(portraitMode: event.portraitMode)) {
       emit(
         state.copyWith(
           initialised: true,
           tiles: _getTiles(event.material, event.width, event.height),
+          portraitMode: event.portraitMode
         ),
       );
       _streamSubscription = gameController.gameCommandsStream.listen((event) {
@@ -76,8 +77,6 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
       });
     }
   }
-
-
 
   List<HamsterTile> _getTiles(
     TieMaterial material,
@@ -186,4 +185,8 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
         (element) => element.type == HamsterTileType.normal && !element.opened,
       )
       .toList();
+  
+  bool shouldInitialise({required bool portraitMode}){
+    return !state.initialised || state.portraitMode != portraitMode;
+  }
 }

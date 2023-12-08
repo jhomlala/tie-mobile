@@ -7,12 +7,12 @@ class HamsterDialog {
     required BuildContext context,
     required HamsterTile tile,
     required void Function() onWrongAnswer,
-  }
-  ) async {
+  }) async {
     final deviceSize = context.deviceSize();
     final imageSize = deviceSize.shortestSide / 4;
     return showDialog<void>(
       context: context,
+      barrierDismissible: false,
       builder: (context) {
         var isWrongAnswerSelected = false;
         return StatefulBuilder(
@@ -77,6 +77,13 @@ class HamsterDialog {
                   ],
                 ),
               ),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),)
+              ],
             );
           },
         );
