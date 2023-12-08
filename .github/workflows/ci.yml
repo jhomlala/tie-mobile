@@ -29,7 +29,7 @@ jobs:
         uses: subosito/flutter-action@v2
       - name: Install Package Dependencies
         run: flutter packages get
-      - name: Get dependencies for example
-        run: flutter pub get
+      - name: Run build script
+        run: ./scripts/build.sh
       - name: Lint using flutter analyze
         run: flutter analyze .
