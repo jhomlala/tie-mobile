@@ -35,7 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onAuthenticate(
-      AuthAuthenticate event, Emitter<AuthState> emit) async {
+      AuthAuthenticate event, Emitter<AuthState> emit,) async {
     try {
       emit(state.copyWith(isLoading: true));
       final googleUser = await GoogleSignIn().signIn();
@@ -62,12 +62,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   FutureOr<void> _onAuthStateChanged(
-      AuthStateChanged event, Emitter<AuthState> emit) {
+      AuthStateChanged event, Emitter<AuthState> emit,) {
     emit(state.copyWith(isAuthenticated: isAuthenticated()));
   }
 
   FutureOr<void> _onAuthSignOut(
-      AuthSignOut event, Emitter<AuthState> emit) async {
+      AuthSignOut event, Emitter<AuthState> emit,) async {
     await FirebaseAuth.instance.signOut();
   }
 

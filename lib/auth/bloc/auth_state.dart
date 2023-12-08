@@ -5,12 +5,12 @@ class AuthState with _$AuthState {
   const factory AuthState({
     required bool isLoading,
     required bool isAuthenticated,
-    required bool authFailed
+    required bool authFailed,
   }) = _AuthState;
 
   factory AuthState.initial() => const AuthState(
     isLoading: true,
     isAuthenticated: false,
-      authFailed: false
+      authFailed: false,
   );
 }

@@ -18,6 +18,7 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   void initState() {
+    super.initState();
     if (!initialised) {
       initialised = true;
       authBloc.add(const AuthInitialise());
