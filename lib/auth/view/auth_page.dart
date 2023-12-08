@@ -41,25 +41,26 @@ class _AuthPageState extends State<AuthPage> {
                 return const Center(child: LoadingIndicator());
               } else {
                 if (!state.isAuthenticated) {
-                  return Center(child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          authBloc.add(const AuthEvent.authenticate());
-                        },
-                        child: const Text('Sign with Google'),
-                      ),
-                      if (state.authFailed)
-                        const Text(
-                          'Auth failed.',
-                          style: TextStyle(
-                            color: Colors.red,
-                          ),
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            authBloc.add(const AuthEvent.authenticate());
+                          },
+                          child: const Text('Sign with Google'),
                         ),
-                    ],
-                  ),);
+                        if (state.authFailed)
+                          const Text(
+                            'Auth failed.',
+                            style: TextStyle(
+                              color: Colors.red,
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
                 }
               }
               return const SizedBox();

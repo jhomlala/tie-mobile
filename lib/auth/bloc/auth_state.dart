@@ -9,8 +9,8 @@ class AuthState with _$AuthState {
   }) = _AuthState;
 
   factory AuthState.initial() => const AuthState(
-    isLoading: true,
-    isAuthenticated: false,
-      authFailed: false,
-  );
+        isLoading: true,
+        isAuthenticated: false,
+        authFailed: false,
+      );
 }

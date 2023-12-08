@@ -24,7 +24,6 @@ final GoRouter router = GoRouter(
         return const AuthPage();
       },
     ),
-
     GoRoute(
       path: Routes.home.path,
       name: Routes.home.path,
