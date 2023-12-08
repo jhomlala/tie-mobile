@@ -20,7 +20,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (BuildContext context, AuthState state) {
-        if (!state.isAuthenticated){
+        if (!state.isAuthenticated) {
           context.replace(Routes.auth.path);
         }
       },
@@ -28,7 +28,9 @@ class _MainPageState extends State<MainPage> {
         builder: (BuildContext context, MainState state) {
           return Scaffold(
             appBar: AppBar(),
-            bottomNavigationBar: const _MainPageBottomNavigationBar(),
+            bottomNavigationBar: _MainPageBottomNavigationBar(
+              selectedIndex: state.pageIndex,
+            ),
             body: IndexedStack(
               index: state.pageIndex,
               children: const [Text('Home'), MaterialsPage(), SettingsPage()],
@@ -42,7 +44,9 @@ class _MainPageState extends State<MainPage> {
 }
 
 class _MainPageBottomNavigationBar extends StatelessWidget {
-  const _MainPageBottomNavigationBar();
+  const _MainPageBottomNavigationBar({required this.selectedIndex});
+
+  final int selectedIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +56,7 @@ class _MainPageBottomNavigationBar extends StatelessWidget {
       type: BottomNavigationBarType.fixed,
       showSelectedLabels: true,
       showUnselectedLabels: true,
-      currentIndex: mainBloc.state.pageIndex,
+      currentIndex: selectedIndex,
       onTap: (index) {
         mainBloc.add(MainEvent.setPage(index));
       },

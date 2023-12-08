@@ -34,14 +34,15 @@ class _AuthPageState extends State<AuthPage> {
       },
       builder: (BuildContext context, AuthState state) {
         return Scaffold(
-          appBar: AppBar(),
           body: LayoutBuilder(
             builder: (context, constraints) {
               if (state.isLoading) {
                 return const Center(child: LoadingIndicator());
               } else {
                 if (!state.isAuthenticated) {
-                  return Column(
+                  return Center(child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
                     children: [
                       ElevatedButton(
                         onPressed: () {
@@ -57,7 +58,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                         ),
                     ],
-                  );
+                  ),);
                 }
               }
               return const SizedBox();

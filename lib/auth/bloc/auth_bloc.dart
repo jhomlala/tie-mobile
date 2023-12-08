@@ -37,6 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   FutureOr<void> _onAuthenticate(
       AuthAuthenticate event, Emitter<AuthState> emit) async {
     try {
+      emit(state.copyWith(isLoading: true));
       final googleUser = await GoogleSignIn().signIn();
 
       final googleAuth = await googleUser?.authentication;
@@ -47,13 +48,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       await FirebaseAuth.instance.signInWithCredential(credential);
-      emit(state.copyWith(isAuthenticated: true));
+      emit(state.copyWith(isAuthenticated: true, isLoading: false));
     } catch (error) {
       Log.error(error.toString());
-      emit(state.copyWith(
-        isAuthenticated: false,
-        authFailed: true,
-      ),);
+      emit(
+        state.copyWith(
+          isAuthenticated: false,
+          isLoading: false,
+          authFailed: true,
+        ),
+      );
     }
   }
 
