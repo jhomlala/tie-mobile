@@ -6,5 +6,4 @@ extension ContextExtension on BuildContext {
   T bloc<T extends Bloc>() {
     return BlocProvider.of<T>(this);
   }
-
 }

@@ -15,5 +15,4 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   FutureOr<void> _onSetPage(MainSetPage event, Emitter<MainState> emit) {
     emit(state.copyWith(pageIndex: event.pageIndex));
   }
-
 }

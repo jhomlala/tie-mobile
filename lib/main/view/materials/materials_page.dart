@@ -37,7 +37,6 @@ class _MaterialsPageState extends State<MaterialsPage> {
               child: _MaterialsGridView(
                 materials: state.materials,
                 onItemPressed: (item) {
-
                   context.pushNamed(
                     Routes.material.path,
                     extra: item,

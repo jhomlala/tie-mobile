@@ -7,6 +7,6 @@ class MaterialState with _$MaterialState {
   }) = _MaterialState;
 
   factory MaterialState.initial() => const MaterialState(
-    isFinished: false,
-  );
+        isFinished: false,
+      );
 }

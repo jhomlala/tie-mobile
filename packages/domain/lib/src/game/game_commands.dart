@@ -1,7 +1,3 @@
-sealed class GameCommand{
+sealed class GameCommand {}
 
-}
-
-class RestartGame extends GameCommand{
-
-}
+class RestartGame extends GameCommand {}

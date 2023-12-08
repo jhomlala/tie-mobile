@@ -28,10 +28,9 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
   late StreamSubscription<GameCommand> _streamSubscription;
 
   @override
-  Future<void> close()async {
+  Future<void> close() async {
     await _streamSubscription.cancel();
-   await super.close();
-
+    await super.close();
   }
 
   FutureOr<void> _onHamsterUpdateScore(
@@ -64,10 +63,9 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
     if (shouldInitialise(portraitMode: event.portraitMode)) {
       emit(
         state.copyWith(
-          initialised: true,
-          tiles: _getTiles(event.material, event.width, event.height),
-          portraitMode: event.portraitMode
-        ),
+            initialised: true,
+            tiles: _getTiles(event.material, event.width, event.height),
+            portraitMode: event.portraitMode),
       );
       _streamSubscription = gameController.gameCommandsStream.listen((event) {
         switch (event.runtimeType) {
@@ -185,8 +183,8 @@ class HamsterBloc extends Bloc<HamsterEvent, HamsterState> {
         (element) => element.type == HamsterTileType.normal && !element.opened,
       )
       .toList();
-  
-  bool shouldInitialise({required bool portraitMode}){
+
+  bool shouldInitialise({required bool portraitMode}) {
     return !state.initialised || state.portraitMode != portraitMode;
   }
 }

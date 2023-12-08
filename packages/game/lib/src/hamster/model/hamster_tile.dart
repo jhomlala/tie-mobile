@@ -26,5 +26,4 @@ class HamsterTile extends Equatable {
 
   @override
   List<Object?> get props => [type, boardY, boardY, rect, opened, config];
-
 }

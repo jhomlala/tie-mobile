@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'tie_material.freezed.dart';
 part 'tie_material.g.dart';
+
 @freezed
 class TieMaterial with _$TieMaterial {
   const factory TieMaterial({

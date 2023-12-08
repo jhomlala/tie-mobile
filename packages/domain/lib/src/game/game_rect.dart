@@ -14,5 +14,4 @@ class GameRect {
   double get width => right - left;
 
   double get height => bottom - top;
-
 }
