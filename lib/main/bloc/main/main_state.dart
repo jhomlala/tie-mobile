@@ -7,8 +7,8 @@ class MainState with _$MainState {
     required int pageIndex,
   }) = _MainState;
 
-  factory MainState.initial() => MainState(
-    isLoading: true,
-    pageIndex: 0,
-  );
+  factory MainState.initial() => const MainState(
+        isLoading: true,
+        pageIndex: 0,
+      );
 }

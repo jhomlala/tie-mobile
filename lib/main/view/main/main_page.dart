@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tie_mobile/common/extensions/context_ext.dart';
-import 'package:tie_mobile/main/bloc/main_bloc.dart';
-
-
+import 'package:tie_mobile/main/bloc/main/main_bloc.dart';
+import 'package:tie_mobile/main/view/materials/materials_page.dart';
+import 'package:ui/ui.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -18,8 +17,11 @@ class _MainPageState extends State<MainPage> {
     return BlocConsumer<MainBloc, MainState>(
       builder: (BuildContext context, MainState state) {
         return Scaffold(
-          bottomNavigationBar: _MainPageBottomNavigationBar(),
-          body: Container(),
+          bottomNavigationBar: const _MainPageBottomNavigationBar(),
+          body: IndexedStack(
+            index: state.pageIndex,
+            children: const [Text('Home'), MaterialsPage(), Text('Settings')],
+          ),
         );
       },
       listener: (BuildContext context, MainState state) {},
@@ -28,25 +30,26 @@ class _MainPageState extends State<MainPage> {
 }
 
 class _MainPageBottomNavigationBar extends StatelessWidget {
-  const _MainPageBottomNavigationBar({super.key});
+  const _MainPageBottomNavigationBar();
+
   @override
   Widget build(BuildContext context) {
     final mainBloc = context.bloc<MainBloc>();
 
     return BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        currentIndex: mainBloc.state.pageIndex,
-        onTap: (index) {
-          print("Set index = " + index.toString());
-          mainBloc.add(MainEvent.setPage(index));
-        },
-        items: [
-          _buildItem(Icons.home, 'Home'),
-          _buildItem(Icons.book, 'Materials'),
-          _buildItem(Icons.settings, 'Settings'),
-        ],);
+      type: BottomNavigationBarType.fixed,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      currentIndex: mainBloc.state.pageIndex,
+      onTap: (index) {
+        mainBloc.add(MainEvent.setPage(index));
+      },
+      items: [
+        _buildItem(Icons.home, 'Home'),
+        _buildItem(Icons.book, 'Materials'),
+        _buildItem(Icons.settings, 'Settings'),
+      ],
+    );
   }
 
   BottomNavigationBarItem _buildItem(IconData icon, String label) {
