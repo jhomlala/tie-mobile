@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tie_mobile/app/router.dart';
+import 'package:tie_mobile/auth/bloc/auth_bloc.dart';
 import 'package:tie_mobile/main/bloc/main/main_bloc.dart';
 import 'package:tie_mobile/main/bloc/materials/materials_bloc.dart';
 import 'package:tie_mobile/material/bloc/material_bloc.dart';
@@ -18,6 +19,11 @@ class _TieAppState extends State<TieApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider<AuthBloc>(
+          create: (context) {
+            return AuthBloc();
+          },
+        ),
         BlocProvider<MainBloc>(
           create: (context) {
             return MainBloc();
