@@ -16,12 +16,22 @@ Future<void> setup() async {
   final getIt = GetIt.instance;
   final localMaterialsDataSource = LocalMaterialsDataSource();
   final remoteMaterialsDataSource = RemoteMaterialsDataSource();
+
   getIt.registerSingleton<MaterialsRepository>(
     MaterialsRepository(
       localDataSource: localMaterialsDataSource,
       remoteDataSource: remoteMaterialsDataSource,
     ),
   );
+
+  final remoteAuthDataSource = RemoteAuthDataSource();
+
+  getIt.registerSingleton<AuthRepository>(
+    AuthRepository(
+      remoteAuthDataSource: remoteAuthDataSource,
+    ),
+  );
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

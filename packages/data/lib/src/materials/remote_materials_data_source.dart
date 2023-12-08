@@ -1,10 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:domain/domain.dart';
 
 class RemoteMaterialsDataSource extends MaterialsDataSource {
   @override
-  Future<Either<TieError, List<TieMaterial>>> getMaterials() {
-    // TODO: implement getMaterials
-    throw UnimplementedError();
+  Future<Either<TieError, List<TieMaterial>>> getMaterials() async {
+    final data = await getFirestore().collection('materials').get();
+    print('DATA:${data.docs}');
+    return const Right([]);
+  }
+
+  FirebaseFirestore getFirestore() {
+    return FirebaseFirestore.instance;
   }
 }

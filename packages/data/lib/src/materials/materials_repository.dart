@@ -11,6 +11,7 @@ class MaterialsRepository {
   final MaterialsDataSource remoteDataSource;
 
   Future<Either<TieError, List<TieMaterial>>> getMaterials() async {
+    await remoteDataSource.getMaterials();
     return localDataSource.getMaterials();
   }
 }

@@ -17,11 +17,14 @@ class TieApp extends StatefulWidget {
 class _TieAppState extends State<TieApp> {
   @override
   Widget build(BuildContext context) {
+    final getIt = GetIt.instance;
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
           create: (context) {
-            return AuthBloc();
+            return AuthBloc(
+              authRepository: getIt.get(),
+            );
           },
         ),
         BlocProvider<MainBloc>(
@@ -32,7 +35,7 @@ class _TieAppState extends State<TieApp> {
         BlocProvider<MaterialsBloc>(
           create: (context) {
             return MaterialsBloc(
-              materialsRepository: GetIt.I.get(),
+              materialsRepository: getIt.get(),
             );
           },
         ),
