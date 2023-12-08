@@ -31,6 +31,5 @@ jobs:
         run: flutter packages get
       - name: Get dependencies for example
         run: flutter pub get
-        working-directory: example
       - name: Lint using flutter analyze
         run: flutter analyze .
