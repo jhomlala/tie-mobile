@@ -1,4 +1,4 @@
-package pl.tie.app.tie_mobile
+package pl.tie.app
 
 import io.flutter.embedding.android.FlutterActivity
 
