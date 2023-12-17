@@ -45,11 +45,18 @@ class _AuthPageState extends State<AuthPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+
+                        ElevatedButton(
+                          onPressed: () {
+                            authBloc.add(const AuthEvent.register());
+                          },
+                          child: const Text('Register'),
+                        ),
                         ElevatedButton(
                           onPressed: () {
                             authBloc.add(const AuthEvent.authenticate());
                           },
-                          child: const Text('Sign with Google'),
+                          child: const Text('Login'),
                         ),
                         if (state.authFailed)
                           const Text(

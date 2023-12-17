@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:data/data.dart';
 import 'package:domain/domain.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tie_mobile/app/tie_app.dart';
 import 'package:tie_mobile/firebase_options.dart';
+import 'package:usecase/usecase.dart';
 
 Future<void> mainCommon(Flavor flavor) async {
   await setup();
@@ -26,13 +29,18 @@ Future<void> setup() async {
 
   final remoteAuthDataSource = RemoteAuthDataSource();
 
-  getIt.registerSingleton<AuthRepository>(
-    AuthRepository(
-      remoteAuthDataSource: remoteAuthDataSource,
-    ),
+  final authRepository = AuthRepository(
+    remoteAuthDataSource: remoteAuthDataSource,
   );
+  getIt
+    ..registerSingleton(authRepository)
+    ..registerSingleton(RegisterUser(authRepository: authRepository))
+    ..registerSingleton(SignInUser(authRepository: authRepository));
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseAuth.instance.useAuthEmulator("localhost", 9099);
+  FirebaseFirestore.instance.useFirestoreEmulator("localhost", 8080);
 }

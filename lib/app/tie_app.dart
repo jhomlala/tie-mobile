@@ -24,6 +24,7 @@ class _TieAppState extends State<TieApp> {
           create: (context) {
             return AuthBloc(
               authRepository: getIt.get(),
+              registerUser: getIt.get(),
             );
           },
         ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:data/data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:usecase/usecase.dart';
 
 part 'auth_bloc.freezed.dart';
 
@@ -11,14 +12,17 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc({required this.authRepository}) : super(AuthState.initial()) {
+  AuthBloc({required this.authRepository, required this.registerUser})
+      : super(AuthState.initial()) {
     on<AuthInitialise>(_onInitialise);
     on<AuthAuthenticate>(_onAuthenticate);
     on<AuthStateChanged>(_onAuthStateChanged);
     on<AuthSignOut>(_onAuthSignOut);
+    on<AuthRegister>(_onAuthRegister);
   }
 
   final AuthRepository authRepository;
+  final RegisterUser registerUser;
 
   late StreamSubscription<bool> _authStateSubscription;
 
@@ -39,7 +43,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
-    (await authRepository.signIn()).fold((l) {
+    (await authRepository.signIn(
+            email: 'jakub@tie24.com', password: 'jakubjakub'))
+        .fold((l) {
       emit(
         state.copyWith(
           isAuthenticated: false,
@@ -64,6 +70,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     await authRepository.signOut();
+  }
+
+  FutureOr<void> _onAuthRegister(AuthRegister event, Emitter<AuthState> emit) {
+    registerUser.invoke(email: 'jakub@tie24.com', password: 'jakubjakub');
   }
 
   @override
