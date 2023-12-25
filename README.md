@@ -1,16 +1,76 @@
-# tie_mobile
+# Tie-mobile
+Teaching is easy mobile application, which helps teaching english.
 
-Teach is Easy mobile project, which 
+## How to use
 
-## Getting Started
+### Pre-build commands
+Build everything:
+```
+./scripts/build.sh
+``` 
 
-This project is a starting point for a Flutter application.
+Build models:
+```
+cd packages/domain
+flutter pub run build_runner build --delete-conflicting-outputs  
+```
 
-A few resources to get you started if this is your first Flutter project:
+Build Freezed data classes:
+```
+flutter pub run build_runner build --delete-conflicting-outputs  
+``` 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Build Freezed data classes:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+Generate translations:
+``` 
+flutter gen-l10n  
+``` 
+
+## Build & run
+
+Before building prod Android, you need to add keystore.jks and key.properties to the project. Here's the info: https://swps.atlassian.net/wiki/spaces/AM/pages/680165377/Release+Android
+
+Build prod:
+```  
+flutter run lib/main_prod.dart --flavor prod  
+```  
+
+Build dev:
+```  
+flutter run lib/main_dev.dart --flavor dev  
+```  
+
+## Build release
+
+Build prod:
+```  
+flutter build ipa lib/main_prod.dart --flavor prod  
+flutter build apk lib/main_prod.dart --flavor prod  
+```  
+
+Build dev:
+```  
+flutter build ipa lib/main_dev.dart --flavor dev  
+flutter build apk lib/main_dev.dart --flavor dev  
+```  
+## Application overview
+
+### Architecture
+SWPS application uses Clean Architecture.
+
+Application layer is in `/lib` directory. Directories are created 'by feature'.
+
+Data layer is stored as separate project in `/packages/data` directory.
+
+Domain layer is stored as separate project in `/packages/domain` directory.
+
+Usecases are stored as separate project in `/packages/usecase` directory.
+
+### State management
+
+Application uses Bloc as state management. Dependencies are being provided via providers in root widget of the app.

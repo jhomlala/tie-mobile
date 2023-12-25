@@ -6,7 +6,6 @@ class RemoteMaterialsDataSource extends MaterialsDataSource {
   @override
   Future<Either<TieError, List<TieMaterial>>> getMaterials() async {
     final data = await getFirestore().collection('materials').get();
-    print('DATA:${data.docs}');
     return const Right([]);
   }
 

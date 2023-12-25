@@ -7,7 +7,6 @@ class RegisterUser {
 
   final AuthRepository authRepository;
 
-  @override
   Future<Either<TieError, TieUser>> invoke({
     required String email,
     required String password,

@@ -11,7 +11,5 @@ class SignInUser {
   Future<Either<TieError, TieUser>> invoke({
     required String email,
     required String password,
-  }) async {
-    return authRepository.signIn(email: email, password: password);
-  }
+  }) async => authRepository.signIn(email: email, password: password);
 }

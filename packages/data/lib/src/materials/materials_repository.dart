@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
 import 'package:domain/domain.dart';
@@ -15,7 +14,6 @@ class MaterialsRepository {
   Future<Either<TieError, List<TieMaterial>>> getMaterials() async {
     await remoteDataSource.getMaterials();
     final localMaterials = await localDataSource.getMaterials();
-    final right = localMaterials.getRight();
 
     return localMaterials;
   }
