@@ -14,7 +14,7 @@ class AuthRepository {
     return remoteAuthDataSource.isAuthenticated();
   }
 
-  Future<Either<TieError, bool>> signIn({
+  Future<Either<TieError, TieUser>> signIn({
     required String email,
     required String password,
   }) {
@@ -25,7 +25,7 @@ class AuthRepository {
     return remoteAuthDataSource.signOut();
   }
 
-  Future<Either<TieError, bool>> register({
+  Future<Either<TieError, TieUser>> register({
     required String email,
     required String password,
   }) {

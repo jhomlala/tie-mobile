@@ -16,7 +16,7 @@ class RemoteAuthDataSource extends AuthDataSource {
   }
 
   @override
-  Future<Either<TieError, bool>> signIn({
+  Future<Either<TieError, TieUser>> signIn({
     required String email,
     required String password,
   }) async {
@@ -24,7 +24,7 @@ class RemoteAuthDataSource extends AuthDataSource {
       final result = await _getFirebaseAuth()
           .signInWithEmailAndPassword(email: email, password: password);
       if (result.user != null) {
-        return const Right(true);
+        return Right(_mapUserToTieUser(result.user!));
       } else {
         return Left(TieAuthError('Invalid email/password'));
       }
@@ -50,17 +50,29 @@ class RemoteAuthDataSource extends AuthDataSource {
   }
 
   @override
-  Future<Either<TieError, bool>> register({
+  Future<Either<TieError, TieUser>> register({
     required String email,
     required String password,
   }) async {
     try {
-      await _getFirebaseAuth()
+      final result = await _getFirebaseAuth()
           .createUserWithEmailAndPassword(email: email, password: password);
-      return const Right(true);
+      if (result.user != null) {
+        return Right(_mapUserToTieUser(result.user!));
+      } else {
+        return Left(TieAuthError('Invalid email/password'));
+      }
     } catch (error) {
       Log.error(error.toString());
       return Left(TieAuthError(error.toString()));
     }
+  }
+
+  TieUser _mapUserToTieUser(User user) {
+    return TieUser(
+      id: user.uid,
+      email: user.email!,
+      emailVerified: user.emailVerified,
+    );
   }
 }
