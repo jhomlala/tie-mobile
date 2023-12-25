@@ -1,6 +1,6 @@
 # tie_mobile
 
-A new Flutter project.
+Teach is Easy mobile project, which 
 
 ## Getting Started
 
