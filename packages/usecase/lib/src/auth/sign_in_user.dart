@@ -7,9 +7,9 @@ class SignInUser {
 
   final AuthRepository authRepository;
 
-  @override
   Future<Either<TieError, TieUser>> invoke({
     required String email,
     required String password,
-  }) async => authRepository.signIn(email: email, password: password);
+  }) async =>
+      authRepository.signIn(email: email, password: password);
 }

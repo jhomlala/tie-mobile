@@ -5,6 +5,7 @@ import 'package:domain/domain.dart';
 class RemoteMaterialsDataSource extends MaterialsDataSource {
   @override
   Future<Either<TieError, List<TieMaterial>>> getMaterials() async {
+    // ignore: unused_local_variable
     final data = await getFirestore().collection('materials').get();
     return const Right([]);
   }

@@ -44,7 +44,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(state.copyWith(isLoading: true));
     (await authRepository.signIn(
-            email: 'jakub@tie24.com', password: 'jakubjakub'))
+      email: event.email,
+      password: event.password,
+    ))
         .fold((l) {
       emit(
         state.copyWith(
