@@ -16,3 +16,11 @@ class TieNavigationError extends TieError {
 class TieUnknownGameError extends TieError {
   TieUnknownGameError(String message) : super('Unsupported game: $message');
 }
+
+class TieUnknownError extends TieError {
+  TieUnknownError(String message) : super('Unknown error: $message');
+}
+
+class TieAuthError extends TieError {
+  TieAuthError(String message) : super('Auth error: $message');
+}

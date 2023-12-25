@@ -1,0 +1,22 @@
+name: usecase
+description: Usecase layer
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  dartz: ^0.10.1
+  equatable: ^2.0.5
+  freezed: ^2.4.5
+  freezed_annotation: ^2.4.1
+  domain:
+    path: ../domain
+  data:
+    path: ../data
+
+
+
+dev_dependencies:
+  very_good_analysis: ^5.0.0+1

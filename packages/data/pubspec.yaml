@@ -14,9 +14,12 @@ dependencies:
   equatable: ^2.0.5
   flutter_secure_storage: ^8.0.0
   shared_preferences: ^2.2.0
-  firebase_core: ^2.15.0
+  firebase_core: ^2.24.0
   firebase_remote_config: ^4.2.4
   path_provider: ^2.0.15
+  cloud_firestore: ^4.13.5
+  firebase_auth: ^4.15.2
+  google_sign_in: ^6.1.6
 
 dev_dependencies:
   very_good_analysis: ^5.0.0+1

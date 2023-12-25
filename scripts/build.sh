@@ -15,6 +15,11 @@ echo '-------------------------------'
 (cd packages/data && flutter pub get)
 
 echo '-------------------------------'
+echo 'Usecase- pub get'
+echo '-------------------------------'
+(cd packages/usecase && flutter pub get)
+
+echo '-------------------------------'
 echo 'Game - pub get'
 echo '-------------------------------'
 (cd packages/game && flutter pub get)

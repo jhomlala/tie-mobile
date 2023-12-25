@@ -1,10 +1,9 @@
 import 'dart:async';
 
-import 'package:domain/domain.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:data/data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:usecase/usecase.dart';
 
 part 'auth_bloc.freezed.dart';
 
@@ -13,22 +12,27 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc() : super(AuthState.initial()) {
+  AuthBloc({required this.authRepository, required this.registerUser})
+      : super(AuthState.initial()) {
     on<AuthInitialise>(_onInitialise);
     on<AuthAuthenticate>(_onAuthenticate);
     on<AuthStateChanged>(_onAuthStateChanged);
     on<AuthSignOut>(_onAuthSignOut);
+    on<AuthRegister>(_onAuthRegister);
   }
 
-  late StreamSubscription<User?> _authStateSubscription;
+  final AuthRepository authRepository;
+  final RegisterUser registerUser;
+
+  late StreamSubscription<bool> _authStateSubscription;
 
   bool isAuthenticated() {
-    return FirebaseAuth.instance.currentUser != null;
+    return authRepository.isAuthenticated();
   }
 
   FutureOr<void> _onInitialise(AuthInitialise event, Emitter<AuthState> emit) {
     _authStateSubscription =
-        FirebaseAuth.instance.authStateChanges().listen((user) {
+        authRepository.getAuthChangesStream().listen((user) {
       add(const AuthEvent.authStateChanged());
     });
     emit(state.copyWith(isLoading: false, isAuthenticated: isAuthenticated()));
@@ -38,21 +42,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthAuthenticate event,
     Emitter<AuthState> emit,
   ) async {
-    try {
-      emit(state.copyWith(isLoading: true));
-      final googleUser = await GoogleSignIn().signIn();
-
-      final googleAuth = await googleUser?.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      emit(state.copyWith(isAuthenticated: true, isLoading: false));
-    } catch (error) {
-      Log.error(error.toString());
+    emit(state.copyWith(isLoading: true));
+    (await authRepository.signIn(
+      email: event.email,
+      password: event.password,
+    ))
+        .fold((l) {
       emit(
         state.copyWith(
           isAuthenticated: false,
@@ -60,7 +55,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           authFailed: true,
         ),
       );
-    }
+    }, (r) {
+      emit(state.copyWith(isAuthenticated: true, isLoading: false));
+    });
   }
 
   FutureOr<void> _onAuthStateChanged(
@@ -74,7 +71,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignOut event,
     Emitter<AuthState> emit,
   ) async {
-    await FirebaseAuth.instance.signOut();
+    await authRepository.signOut();
+  }
+
+  FutureOr<void> _onAuthRegister(AuthRegister event, Emitter<AuthState> emit) {
+    registerUser.invoke(email: 'jakub@tie24.com', password: 'jakubjakub');
   }
 
   @override
